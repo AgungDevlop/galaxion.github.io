@@ -4,23 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DoobStream 4</title>
-     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-RXK2H73QCS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-RXK2H73QCS');
-</script>
+    <title>Play Video</title>
+    <!-- Include Tailwind CSS -->
+ <!-- Add this script tag after the Firebase script tags in the head section -->
+    
  <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <!-- Add this script tag to include SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>     
-     <style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
         body,
         h1,
         h2 {
@@ -70,16 +65,15 @@
         .pagination button {
             margin-right: 10px;
         }
-    </style>    
-
-         
+    </style>
+    
 
 </head>
 
 <body class="bg-gray-100 p-2">
 
 <header class="w-full bg-red-600 text-center text-white p-4">
-    <h1 id="title" class="text-4xl font-bold mb-6">DoobsStream 2</h1>
+    <h1 id="title" class="text-4xl font-bold mb-6">Simontok 2024</h1>
     <div class="relative text-gray-600">
         <input id="searchInput" type="search" name="search" placeholder="Cari video..."
             class="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none w-64">
@@ -92,21 +86,15 @@
 
   <!-- Main Content -->
 <main class="container mx-auto mt-8 p-2 bg-white rounded shadow-lg">
-
+  <div class="aspect-w-16 aspect-h-9">
+     <h1 id="videoTitle" class="text-2xl mt-8 font-bold">Video Title<h1>
+    <video id="video-id" class="w-full h-full" controls preload="metadata" allowfullscreen>
+      <source id="playVideo" type="video/mp4" />
+    </video>
+  </div>
 </main>
 
 
- <h1 class="text-2xl mt-8 font-bold">Video Lainya</h1>
-<div id="videoPlaylist" class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"></div>
-<div id="noResults" class="text-center mt-5 text-red-500 hidden">Video yang dicari tidak tersedia.</div>
-<div class="pagination flex justify-center items-center mt-5">
-    <span id="pageNumbers" class="mx-4"></span>
-</div>
-
-
-
-
- 
 <footer class="bg-red-600 mt-3 text-white p-4 text-center">
     <p id="copyrightText" class="text-sm">
         ©Copyright By Simontok Indo 2024
@@ -115,7 +103,264 @@
 
 
 
-<script src="script.js"></script>
+<script type="module">
+
+  
+    const urlParams = new URLSearchParams(window.location.search);
+    const apiKey = urlParams.get('key');
+    
+    const randomId = getRandomIdFromUrl();
+
+    
+    const videoUrl = sessionStorage.getItem('videoUrl');
+    const videoTitle = sessionStorage.getItem('videoTitle');
+    const pageTitle = document.title = videoTitle;
+    
+if (pageTitle == null){
+  document.title = "Play Video";
+}
+    
+if (videoUrl) {
+const videoPlayer = document.getElementById('playVideo');
+    videoPlayer.src = videoUrl;
+    videoPlayer.addEventListener('loadedmetadata', function() {
+        videoPlayer.play();
+    });
+      document.getElementById('videoTitle').innerText = videoTitle;
+} else {
+  console.error('No video URL found in sessionStorage');
+}
+
+
+
+
+
+
+function processVideoFromRandomId(videos) {
+  const randomId = getRandomIdFromUrl(); // Ambil randomId dari URL
+  const mainElement = document.querySelector('main.container');
+
+  if (randomId) {
+    const video = videos.find(video => video.id === randomId); // Cari video berdasarkan ID
+
+    if (video) {
+      // Dapatkan URL dan Judul video dari data JSON
+      const videoUrl = video.Url;
+      const videoTitle = video.Judul;
+
+      // Hapus konten lama di mainElement jika ada
+      mainElement.innerHTML = '';
+
+      // Buat elemen baru
+      const containerDiv = document.createElement('div');
+      containerDiv.className = 'aspect-w-16 aspect-h-9';
+
+      const titleElement = document.createElement('h1');
+      titleElement.id = 'videoTitle';
+      titleElement.className = 'text-2xl mt-8 font-bold';
+      titleElement.innerText = videoTitle;
+
+      // Ensure the text wraps within the main container
+      titleElement.style.whiteSpace = 'normal';
+      titleElement.style.wordWrap = 'break-word';
+      titleElement.style.overflowWrap = 'break-word';
+
+      const videoElement = document.createElement('video');
+      videoElement.id = 'video-id';
+      videoElement.className = 'w-full h-full';
+      videoElement.controls = true;
+      videoElement.preload = 'metadata';
+      videoElement.allowFullscreen = true;
+
+      const sourceElement = document.createElement('source');
+      sourceElement.id = 'playVideo';
+      sourceElement.type = 'video/mp4';
+      sourceElement.src = videoUrl;
+
+      // Append source to video and video to container
+      videoElement.appendChild(sourceElement);
+      containerDiv.appendChild(titleElement);
+      containerDiv.appendChild(videoElement);
+
+      // Append the new elements to the mainElement
+      mainElement.appendChild(containerDiv);
+
+      // Inisialisasi Fluid Player setelah elemen video ditambahkan
+      var myFP = fluidPlayer(
+        'video-id', {
+          "layoutControls": {
+            "controlBar": {
+              "autoHideTimeout": 3,
+              "animated": true,
+              "autoHide": true
+            },
+            "htmlOnPauseBlock": {
+              "html": null,
+              "height": null,
+              "width": null
+            },
+            "autoPlay": false,
+            "mute": true,
+            "allowTheatre": true,
+            "playPauseAnimation": false,
+            "playbackRateEnabled": false,
+            "allowDownload": false,
+            "playButtonShowing": true,
+            "fillToContainer": false,
+            "posterImage": ""
+          },
+          "vastOptions": {
+            "adList": [],
+            "adCTAText": false,
+            "adCTATextPosition": ""
+          }
+        }
+      );
+
+      // Play video once metadata is loaded
+      videoElement.addEventListener('loadedmetadata', function() {
+        videoElement.play();
+      });
+
+    } else {
+      console.error('Video not found for the given randomId.');
+      // Menyembunyikan elemen main jika video tidak ditemukan
+      if (mainElement) {
+        mainElement.style.display = 'none';
+      }
+    }
+  } else {
+    console.error('Random ID not found in URL.');
+    // Menyembunyikan elemen main jika random ID tidak ditemukan
+    if (mainElement) {
+      mainElement.style.display = 'none';
+    }
+  }
+}
+
+
+
+
+
+
+
+  const apiUrl = 'https://raw.githubusercontent.com/AgungDevlop/Viral/main/Video.json';
+  let videos = [];
+  let currentPage = 1;
+  const videosPerPage = 10;
+      // Load video list from JSON for the specified key
+
+
+// Fungsi untuk mengacak array
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Fetch JSON data
+fetch(apiUrl)
+  .then(response => response.json())
+  .then(data => {
+    processVideoFromRandomId(videos);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+
+
+function getRandomIdFromUrl() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#/')) {
+    return hash.substring(2); // Menghapus '#/' dari awal dan mengambil sisanya sebagai ID
+  }
+  return null;
+}
+
+
+document.getElementById('searchButton').addEventListener('click', function() {
+    filterVideos();
+});
+
+function filterVideos() {
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+    const filteredVideos = videos.filter(video => 
+        video.Judul.toLowerCase().includes(searchValue)
+    );
+
+    loadVideosFromFilteredData(filteredVideos);
+};
+
+// Fungsi untuk memuat video berdasarkan data video yang sudah difilter
+function loadVideosFromFilteredData(filteredVideos) {
+    const playlistContainer = document.getElementById('videoPlaylist');
+    playlistContainer.innerHTML = ''; // Hapus konten lama
+
+    filteredVideos.forEach(video => {
+        const videoTitleWithExtension = video.Judul;
+        const videoTitle = videoTitleWithExtension.replace(/\.[^/.]+$/, ""); // Hapus ekstensi file
+        const videoUrl = video.Url;
+        const videoId = video.id;
+
+        const videoElement = document.createElement('div');
+        videoElement.classList.add('video-thumbnail', 'relative');
+        videoElement.innerHTML = `
+            <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
+                <h2 class="text-xl font-bold mb-2">${videoTitle}</h2>
+                <div class="aspect-w-16 aspect-h-9 relative">
+                    <div class="loading-overlay">
+                        <div class="loading-placeholder"></div>
+                    </div>
+                    <video id="data-video" class="w-full h-40 object-cover" preload="metadata" onloadedmetadata="captureThumbnail(this)">
+                        <source src="${videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <div class="flex justify-between items-center mt-4">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-1 rounded"
+                        onclick="playVideos('${videoId}', '${videoTitle}')">
+                        <i class="fas fa-play"></i> Play Video
+                    </button>
+                    <button onclick="download('${videoUrl}', '${videoTitle}')" rel="noopener noreferrer"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-1 rounded">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button onclick="copyVideoId('${videoId}')" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-1 rounded">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        `;
+        playlistContainer.appendChild(videoElement);
+    });
+
+    // Menampilkan pesan jika tidak ada hasil pencarian
+    document.getElementById('noResults').style.display = filteredVideos.length ? 'none' : 'block';
+}
+
+   
+   document.addEventListener('DOMContentLoaded', function() {
+  // Ambil elemen video
+  var videoElement = document.getElementById('video-id');
+
+
+ 
+});
+
+
+
+
+ 
+const currentYear = new Date().getFullYear();
+    document.getElementById('copyrightText').textContent = `© Copyright By Orang Keren ${currentYear}`;
+    document.getElementById('title').textContent = `Orang Keren ${currentYear}`;
+  
+
+</script>
+
 
 
 </body>
