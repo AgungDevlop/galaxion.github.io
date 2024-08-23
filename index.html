@@ -13,8 +13,6 @@
 
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Plyr CSS -->
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 
     <style>
         body,
@@ -60,6 +58,12 @@
             justify-content: center;
             margin-top: 1rem;
         }
+
+        #video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -71,12 +75,13 @@
 
 <!-- Main Content -->
 <main class="container mx-auto mt-8 p-2 bg-gray-900 rounded shadow-lg">
-    <div class="aspect-w-16 aspect-h-9">
+    <div id="video-container" class="aspect-w-16 aspect-h-9 w-full">
         <h1 id="videoTitle" class="text-2xl mt-8 font-bold">Video Title</h1>
         <video id="video-id" class="w-full h-full" controls preload="metadata" allowfullscreen>
             <source id="playVideo" type="video/mp4" />
+            Your browser does not support the video tag.
         </video>
-        <div id="errorMessage" class="error-message hidden">Error</div>
+        <div id="errorMessage" class="error-message hidden">Error loading video</div>
     </div>
 
     <!-- Input URL and Share Button -->
@@ -99,8 +104,6 @@
     </p>
 </footer>
 
-<!-- Plyr JS -->
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 <script type="module">
     const apiUrl = 'https://raw.githubusercontent.com/AgungDevlop/Viral/main/Video.json';
 
@@ -109,13 +112,18 @@
     if (videoUrl) {
         const videoPlayer = document.getElementById('playVideo');
         videoPlayer.src = videoUrl;
+
+        // Automatically play the video once it's ready
         videoPlayer.addEventListener('loadedmetadata', function () {
             videoPlayer.play();
         });
+
+        // Handle error loading video
         videoPlayer.addEventListener('error', function () {
             document.getElementById('errorMessage').classList.remove('hidden');
             videoPlayer.classList.add('hidden'); // Hide the video element
         });
+
         document.getElementById('videoTitle').innerText = videoTitle;
     } else {
         console.error('No video URL found in sessionStorage');
@@ -138,43 +146,16 @@
             const video = videos.find(video => video.id === randomId);
 
             if (video) {
-                mainElement.innerHTML = '';
-                const containerDiv = document.createElement('div');
-                containerDiv.className = 'aspect-w-16 aspect-h-9';
-
-                const titleElement = document.createElement('h1');
-                titleElement.id = 'videoTitle';
-                titleElement.className = 'text-2xl mt-8 font-bold';
+                const titleElement = document.getElementById('videoTitle');
                 titleElement.innerText = video.Judul;
 
-                const videoElement = document.createElement('video');
-                videoElement.id = 'video-id';
-                videoElement.className = 'w-full h-full plyr';
-                videoElement.controls = true;
-                videoElement.preload = 'metadata';
-                videoElement.allowFullscreen = true;
-
-                const sourceElement = document.createElement('source');
-                sourceElement.id = 'playVideo';
-                sourceElement.type = 'video/mp4';
+                const videoPlayer = document.getElementById('video-id');
+                const sourceElement = document.getElementById('playVideo');
                 sourceElement.src = video.Url;
 
-                videoElement.appendChild(sourceElement);
-                containerDiv.appendChild(titleElement);
-                containerDiv.appendChild(videoElement);
-                const errorMessage = document.createElement('div');
-                errorMessage.id = 'errorMessage';
-                errorMessage.className = 'error-message hidden';
-                errorMessage.innerText = 'Error';
-                containerDiv.appendChild(errorMessage);
-                mainElement.appendChild(containerDiv);
-
-                // Initialize Plyr
-                const player = new Plyr(videoElement, {
-                    autoplay: false,
-                    muted: true,
-                    controls: ['play', 'progress', 'current-time', 'mute', 'fullscreen'],
-                });
+                // Update URL input field
+                const urlInput = document.getElementById('videoUrl');
+                urlInput.value = `https://doobs.my.id/#/${video.id}`; // Update with actual randomId
 
                 // Set download button functionality
                 const downloadButton = document.getElementById('downloadButton');
@@ -182,10 +163,6 @@
                     sessionStorage.setItem('dwn', video.Url); // Save video URL to sessionStorage
                     window.location.href = '/download.html'; // Navigate to download.html
                 };
-
-                // Update URL input field
-                const urlInput = document.getElementById('videoUrl');
-                urlInput.value = `https://doobs.my.id/#/${video.id}`; // Update with actual randomId
 
                 // Update share button data
                 const shareButton = document.getElementById('shareButton');
@@ -219,14 +196,9 @@
                     }
                 };
 
-                videoElement.addEventListener('loadedmetadata', function () {
-                    player.play();
-                });
-
-                videoElement.addEventListener('error', function () {
-                    document.getElementById('errorMessage').classList.remove('hidden');
-                    videoElement.classList.add('hidden'); // Hide the video element
-                });
+                // Automatically play the video once it's ready
+                videoPlayer.load();
+                videoPlayer.play();
             } else {
                 console.error('Video not found for the given randomId.');
                 mainElement.style.display = 'none';
