@@ -13,8 +13,6 @@
 
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Fluid Player -->
-    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
 
     <style>
         body,
@@ -38,14 +36,6 @@
 
         .btn-share:hover {
             background-color: #4338ca;
-        }
-
-        .pagination {
-            margin-top: 20px;
-        }
-
-        .pagination button {
-            margin-right: 10px;
         }
 
         .error-message {
@@ -75,8 +65,9 @@
         <h1 id="videoTitle" class="text-2xl mt-8 font-bold">Video Title</h1>
         <video id="video-id" class="w-full h-full" controls preload="metadata" allowfullscreen>
             <source id="playVideo" type="video/mp4" />
+            Your browser does not support the video tag.
         </video>
-        <div id="errorMessage" class="error-message hidden">Error</div>
+        <div id="errorMessage" class="error-message hidden">Error loading video</div>
     </div>
 
     <!-- Input URL and Share Button -->
@@ -136,7 +127,6 @@
             const video = videos.find(video => video.id === randomId);
 
             if (video) {
-                mainElement.innerHTML = '';
                 const containerDiv = document.createElement('div');
                 containerDiv.className = 'aspect-w-16 aspect-h-9';
 
@@ -163,7 +153,7 @@
                 const errorMessage = document.createElement('div');
                 errorMessage.id = 'errorMessage';
                 errorMessage.className = 'error-message hidden';
-                errorMessage.innerText = 'Error';
+                errorMessage.innerText = 'Error loading video';
                 containerDiv.appendChild(errorMessage);
                 mainElement.appendChild(containerDiv);
 
@@ -209,35 +199,6 @@
                         });
                     }
                 };
-
-                var myFP = fluidPlayer('video-id', {
-                    layoutControls: {
-                        controlBar: {
-                            autoHideTimeout: 3,
-                            animated: true,
-                            autoHide: true
-                        },
-                        htmlOnPauseBlock: {
-                            html: null,
-                            height: null,
-                            width: null
-                        },
-                        autoPlay: false,
-                        mute: true,
-                        allowTheatre: true,
-                        playPauseAnimation: false,
-                        playbackRateEnabled: false,
-                        allowDownload: false,
-                        playButtonShowing: true,
-                        fillToContainer: false,
-                        posterImage: ""
-                    },
-                    vastOptions: {
-                        adList: [],
-                        adCTAText: false,
-                        adCTATextPosition: ""
-                    }
-                });
 
                 videoElement.addEventListener('loadedmetadata', function () {
                     videoElement.play();
