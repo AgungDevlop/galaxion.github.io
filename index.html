@@ -5,15 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Play Video</title>
+
     <!-- Include Tailwind CSS -->
- <!-- Add this script tag after the Firebase script tags in the head section -->
-    
- <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<!-- Add this script tag to include SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Fluid Player -->
+    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
 
     <style>
         body,
@@ -22,40 +23,21 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-
-        .video-thumbnail {
-            position: relative;
-            overflow: hidden;
+        .bg-black {
+            background-color: #000000;
         }
 
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.8);
-            z-index: 1;
+        .text-white {
+            color: #ffffff;
         }
 
-        .loading-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-            animation: loadingAnimation 1.5s infinite;
+        .btn-share {
+            background-color: #4f46e5;
+            color: white;
         }
 
-        @keyframes loadingAnimation {
-            0% {
-                transform: translateX(-100%);
-            }
-
-            100% {
-                transform: translateX(100%);
-            }
+        .btn-share:hover {
+            background-color: #4338ca;
         }
 
         .pagination {
@@ -65,247 +47,205 @@
         .pagination button {
             margin-right: 10px;
         }
-    </style>
-    
 
+        .error-message {
+            color: red;
+            font-size: 24px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 p-2">
+<body class="bg-black text-white p-2">
 
-<header class="w-full bg-red-600 text-center text-white p-4">
+<header class="w-full bg-gray-800 text-center p-4">
     <h1 id="title" class="text-4xl font-bold mb-6">Simontok 2024</h1>
-    <div class="relative text-gray-600">
-        <input id="searchInput" type="search" name="search" placeholder="Cari video..."
-            class="bg-white h-10 px-5 pr-10 rounded-full text-sm focus:outline-none w-64">
-        <button id="searchButton" type="button" class="absolute right-0 top-0 mt-3 mr-4 ml-3">
-            <i class="fas fa-search text-white text-lg"></i>
-        </button>
-    </div>
 </header>
 
+<!-- Main Content -->
+<main class="container mx-auto mt-8 p-2 bg-gray-900 rounded shadow-lg">
+    <div class="aspect-w-16 aspect-h-9">
+        <h1 id="videoTitle" class="text-2xl mt-8 font-bold">Video Title</h1>
+        <video id="video-id" class="w-full h-full" controls preload="metadata" allowfullscreen>
+            <source id="playVideo" type="video/mp4" />
+        </video>
+        <div id="errorMessage" class="error-message hidden">Error</div>
+    </div>
 
-  <!-- Main Content -->
-<main class="container mx-auto mt-8 p-2 bg-white rounded shadow-lg">
-  <div class="aspect-w-16 aspect-h-9">
-     <h1 id="videoTitle" class="text-2xl mt-8 font-bold">Video Title<h1>
-    <video id="video-id" class="w-full h-full" controls preload="metadata" allowfullscreen>
-      <source id="playVideo" type="video/mp4" />
-    </video>
-  </div>
+    <!-- Input URL and Share Button -->
+    <div class="flex items-center mt-4">
+        <input id="videoUrl" type="text" class="border rounded w-full py-2 px-3 bg-gray-800 text-white" value="https://doobs.my.id/#/randomId" readonly />
+        <button id="shareButton" class="ml-2 btn-share rounded px-4 py-2 hover:bg-indigo-600 transition">
+            <i class="fas fa-share-alt"></i>
+        </button>
+    </div>
+
+    <!-- Download Button -->
+    <div class="mt-4">
+        <button id="downloadButton" class="block bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition w-full text-center">Download Video</button>
+    </div>
 </main>
 
-
-<footer class="bg-red-600 mt-3 text-white p-4 text-center">
+<footer class="bg-gray-800 mt-3 text-white p-4 text-center fixed bottom-0 left-0 w-full">
     <p id="copyrightText" class="text-sm">
         ©Copyright By Simontok Indo 2024
     </p>
 </footer>
 
-
-
 <script type="module">
+    const apiUrl = 'https://raw.githubusercontent.com/AgungDevlop/Viral/main/Video.json';
 
-  
-    const urlParams = new URLSearchParams(window.location.search);
-    const apiKey = urlParams.get('key');
-    
-    const randomId = getRandomIdFromUrl();
-
-    
     const videoUrl = sessionStorage.getItem('videoUrl');
     const videoTitle = sessionStorage.getItem('videoTitle');
-    const pageTitle = document.title = videoTitle;
-    
-if (pageTitle == null){
-  document.title = "Play Video";
-}
-    
-if (videoUrl) {
-const videoPlayer = document.getElementById('playVideo');
-    videoPlayer.src = videoUrl;
-    videoPlayer.addEventListener('loadedmetadata', function() {
-        videoPlayer.play();
-    });
-      document.getElementById('videoTitle').innerText = videoTitle;
-} else {
-  console.error('No video URL found in sessionStorage');
-}
-
-
-
-
-
-
-function processVideoFromRandomId(videos) {
-  const randomId = getRandomIdFromUrl(); // Ambil randomId dari URL
-  const mainElement = document.querySelector('main.container');
-
-  if (randomId) {
-    const video = videos.find(video => video.id === randomId); // Cari video berdasarkan ID
-
-    if (video) {
-      // Dapatkan URL dan Judul video dari data JSON
-      const videoUrl = video.Url;
-      const videoTitle = video.Judul;
-
-      // Hapus konten lama di mainElement jika ada
-      mainElement.innerHTML = '';
-
-      // Buat elemen baru
-      const containerDiv = document.createElement('div');
-      containerDiv.className = 'aspect-w-16 aspect-h-9';
-
-      const titleElement = document.createElement('h1');
-      titleElement.id = 'videoTitle';
-      titleElement.className = 'text-2xl mt-8 font-bold';
-      titleElement.innerText = videoTitle;
-
-      // Ensure the text wraps within the main container
-      titleElement.style.whiteSpace = 'normal';
-      titleElement.style.wordWrap = 'break-word';
-      titleElement.style.overflowWrap = 'break-word';
-
-      const videoElement = document.createElement('video');
-      videoElement.id = 'video-id';
-      videoElement.className = 'w-full h-full';
-      videoElement.controls = true;
-      videoElement.preload = 'metadata';
-      videoElement.allowFullscreen = true;
-
-      const sourceElement = document.createElement('source');
-      sourceElement.id = 'playVideo';
-      sourceElement.type = 'video/mp4';
-      sourceElement.src = videoUrl;
-
-      // Append source to video and video to container
-      videoElement.appendChild(sourceElement);
-      containerDiv.appendChild(titleElement);
-      containerDiv.appendChild(videoElement);
-
-      // Append the new elements to the mainElement
-      mainElement.appendChild(containerDiv);
-
-      // Inisialisasi Fluid Player setelah elemen video ditambahkan
-      var myFP = fluidPlayer(
-        'video-id', {
-          "layoutControls": {
-            "controlBar": {
-              "autoHideTimeout": 3,
-              "animated": true,
-              "autoHide": true
-            },
-            "htmlOnPauseBlock": {
-              "html": null,
-              "height": null,
-              "width": null
-            },
-            "autoPlay": false,
-            "mute": true,
-            "allowTheatre": true,
-            "playPauseAnimation": false,
-            "playbackRateEnabled": false,
-            "allowDownload": false,
-            "playButtonShowing": true,
-            "fillToContainer": false,
-            "posterImage": ""
-          },
-          "vastOptions": {
-            "adList": [],
-            "adCTAText": false,
-            "adCTATextPosition": ""
-          }
-        }
-      );
-
-      // Play video once metadata is loaded
-      videoElement.addEventListener('loadedmetadata', function() {
-        videoElement.play();
-      });
-
+    if (videoUrl) {
+        const videoPlayer = document.getElementById('playVideo');
+        videoPlayer.src = videoUrl;
+        videoPlayer.addEventListener('loadedmetadata', function () {
+            videoPlayer.play();
+        });
+        videoPlayer.addEventListener('error', function () {
+            document.getElementById('errorMessage').classList.remove('hidden');
+            videoPlayer.classList.add('hidden'); // Hide the video element
+        });
+        document.getElementById('videoTitle').innerText = videoTitle;
     } else {
-      console.error('Video not found for the given randomId.');
-      // Menyembunyikan elemen main jika video tidak ditemukan
-      if (mainElement) {
-        mainElement.style.display = 'none';
-      }
+        console.error('No video URL found in sessionStorage');
     }
-  } else {
-    console.error('Random ID not found in URL.');
-    // Menyembunyikan elemen main jika random ID tidak ditemukan
-    if (mainElement) {
-      mainElement.style.display = 'none';
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(videos => {
+            processVideoFromRandomId(videos);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+    function processVideoFromRandomId(videos) {
+        const randomId = getRandomIdFromUrl();
+        const mainElement = document.querySelector('main.container');
+
+        if (randomId) {
+            const video = videos.find(video => video.id === randomId);
+
+            if (video) {
+                mainElement.innerHTML = '';
+                const containerDiv = document.createElement('div');
+                containerDiv.className = 'aspect-w-16 aspect-h-9';
+
+                const titleElement = document.createElement('h1');
+                titleElement.id = 'videoTitle';
+                titleElement.className = 'text-2xl mt-8 font-bold';
+                titleElement.innerText = video.Judul;
+
+                const videoElement = document.createElement('video');
+                videoElement.id = 'video-id';
+                videoElement.className = 'w-full h-full';
+                videoElement.controls = true;
+                videoElement.preload = 'metadata';
+                videoElement.allowFullscreen = true;
+
+                const sourceElement = document.createElement('source');
+                sourceElement.id = 'playVideo';
+                sourceElement.type = 'video/mp4';
+                sourceElement.src = video.Url;
+
+                videoElement.appendChild(sourceElement);
+                containerDiv.appendChild(titleElement);
+                containerDiv.appendChild(videoElement);
+                const errorMessage = document.createElement('div');
+                errorMessage.id = 'errorMessage';
+                errorMessage.className = 'error-message hidden';
+                errorMessage.innerText = 'Error';
+                containerDiv.appendChild(errorMessage);
+                mainElement.appendChild(containerDiv);
+
+                // Set download button functionality
+                const downloadButton = document.getElementById('downloadButton');
+                downloadButton.onclick = function () {
+                    sessionStorage.setItem('dwn', video.Url); // Save video URL to sessionStorage
+                    window.location.href = '/download.html'; // Navigate to download.html
+                };
+
+                // Update URL input field
+                const urlInput = document.getElementById('videoUrl');
+                urlInput.value = `https://doobs.my.id/#/${video.id}`; // Update with actual randomId
+
+                // Update share button data
+                const shareButton = document.getElementById('shareButton');
+                shareButton.onclick = function () {
+                    const shareData = {
+                        title: video.Judul,
+                        text: `Tonton video viral ${video.Judul} terbaru`,
+                        url: urlInput.value
+                    };
+
+                    if (navigator.share) {
+                        navigator.share(shareData)
+                            .then(() => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil Membagikan!',
+                                    text: 'Link telah dibagikan ke aplikasi sosial.',
+                                    confirmButtonText: 'OK'
+                                });
+                            })
+                            .catch((error) => {
+                                console.error('Error sharing:', error);
+                            });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Berbagi tidak didukung',
+                            text: 'Fitur berbagi tidak didukung di browser ini.',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                };
+
+                fluidPlayer('video-id', {
+                    layoutControls: {
+                        controlBar: {
+                            autoHideTimeout: 3,
+                            animated: true,
+                            autoHide: true
+                        },
+                        autoPlay: false,
+                        mute: true,
+                        allowTheatre: true,
+                        fillToContainer: false,
+                        playButtonShowing: true
+                    }
+                });
+
+                videoElement.addEventListener('loadedmetadata', function () {
+                    videoElement.play();
+                });
+
+                videoElement.addEventListener('error', function () {
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                    videoElement.classList.add('hidden'); // Hide the video element
+                });
+            } else {
+                console.error('Video not found for the given randomId.');
+                mainElement.style.display = 'none';
+            }
+        } else {
+            console.error('Random ID not found in URL.');
+            mainElement.style.display = 'none';
+        }
     }
-  }
-}
 
+    function getRandomIdFromUrl() {
+        const hash = window.location.hash;
+        return hash.startsWith('#/') ? hash.substring(2) : null;
+    }
 
-
-
-
-
-
-  const apiUrl = 'https://raw.githubusercontent.com/AgungDevlop/Viral/main/Video.json';
-  let videos = [];
-  let currentPage = 1;
-  const videosPerPage = 10;
-      // Load video list from JSON for the specified key
-
-
-// Fungsi untuk mengacak array
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-// Fetch JSON data
-fetch(apiUrl)
-  .then(response => response.json())
-  .then(data => {
-     
-    videos = shuffleArray(data); 
-    processVideoFromRandomId(videos);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-
-
-
-function getRandomIdFromUrl() {
-  const hash = window.location.hash;
-  if (hash.startsWith('#/')) {
-    return hash.substring(2); // Menghapus '#/' dari awal dan mengambil sisanya sebagai ID
-  }
-  return null;
-}
-
-
-
-   
-   document.addEventListener('DOMContentLoaded', function() {
-  // Ambil elemen video
-  var videoElement = document.getElementById('video-id');
-
-
- 
-});
-
-
-
-
- 
-const currentYear = new Date().getFullYear();
+    const currentYear = new Date().getFullYear();
     document.getElementById('copyrightText').textContent = `© Copyright By Orang Keren ${currentYear}`;
     document.getElementById('title').textContent = `Orang Keren ${currentYear}`;
-  
-
 </script>
 
-
-
 </body>
-
-</html> 
+</html>
