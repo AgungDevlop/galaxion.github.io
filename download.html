@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Video</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+</head>
+
+<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
+
+    <div class="bg-gray-800 p-4 rounded shadow-lg text-center">
+        <h1 class="text-3xl font-bold mb-4">Download Video</h1>
+        <button id="downloadVideoButton" class="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition w-full">
+            Download Video
+        </button>
+    </div>
+
+    <footer class="bg-gray-800 mt-3 text-white p-4 text-center fixed bottom-0 left-0 w-full">
+        <p id="copyrightText" class="text-sm">
+            ©Copyright By Simontok Indo 2024
+        </p>
+    </footer>
+
+    <script>
+        const videoUrl = sessionStorage.getItem('dwn');
+        const downloadButton = document.getElementById('downloadVideoButton');
+
+        if (videoUrl) {
+            downloadButton.onclick = function () {
+                window.location.href = videoUrl; // Redirect to video URL to start download
+            };
+        } else {
+            downloadButton.textContent = 'No video URL found';
+            downloadButton.disabled = true;
+        }
+
+        const currentYear = new Date().getFullYear();
+        document.getElementById('copyrightText').textContent = `© Copyright By Orang Keren ${currentYear}`;
+    </script>
+
+</body>
+</html>
