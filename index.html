@@ -264,6 +264,8 @@ function shuffleArray(array) {
 fetch(apiUrl)
   .then(response => response.json())
   .then(data => {
+     
+    videos = shuffleArray(data); 
     processVideoFromRandomId(videos);
   })
   .catch(error => {
@@ -281,65 +283,6 @@ function getRandomIdFromUrl() {
 }
 
 
-document.getElementById('searchButton').addEventListener('click', function() {
-    filterVideos();
-});
-
-function filterVideos() {
-    const searchValue = document.getElementById('searchInput').value.toLowerCase();
-    const filteredVideos = videos.filter(video => 
-        video.Judul.toLowerCase().includes(searchValue)
-    );
-
-    loadVideosFromFilteredData(filteredVideos);
-};
-
-// Fungsi untuk memuat video berdasarkan data video yang sudah difilter
-function loadVideosFromFilteredData(filteredVideos) {
-    const playlistContainer = document.getElementById('videoPlaylist');
-    playlistContainer.innerHTML = ''; // Hapus konten lama
-
-    filteredVideos.forEach(video => {
-        const videoTitleWithExtension = video.Judul;
-        const videoTitle = videoTitleWithExtension.replace(/\.[^/.]+$/, ""); // Hapus ekstensi file
-        const videoUrl = video.Url;
-        const videoId = video.id;
-
-        const videoElement = document.createElement('div');
-        videoElement.classList.add('video-thumbnail', 'relative');
-        videoElement.innerHTML = `
-            <div class="bg-white p-4 rounded-lg shadow-md flex flex-col">
-                <h2 class="text-xl font-bold mb-2">${videoTitle}</h2>
-                <div class="aspect-w-16 aspect-h-9 relative">
-                    <div class="loading-overlay">
-                        <div class="loading-placeholder"></div>
-                    </div>
-                    <video id="data-video" class="w-full h-40 object-cover" preload="metadata" onloadedmetadata="captureThumbnail(this)">
-                        <source src="${videoUrl}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-                <div class="flex justify-between items-center mt-4">
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-1 rounded"
-                        onclick="playVideos('${videoId}', '${videoTitle}')">
-                        <i class="fas fa-play"></i> Play Video
-                    </button>
-                    <button onclick="download('${videoUrl}', '${videoTitle}')" rel="noopener noreferrer"
-                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-1 rounded">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                    <button onclick="copyVideoId('${videoId}')" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-1 rounded">
-                        <i class="fas fa-copy"></i> Copy Link
-                    </button>
-                </div>
-            </div>
-        `;
-        playlistContainer.appendChild(videoElement);
-    });
-
-    // Menampilkan pesan jika tidak ada hasil pencarian
-    document.getElementById('noResults').style.display = filteredVideos.length ? 'none' : 'block';
-}
 
    
    document.addEventListener('DOMContentLoaded', function() {
