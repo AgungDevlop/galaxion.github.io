@@ -54,6 +54,12 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        .centered-download {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 
@@ -81,9 +87,9 @@
         </button>
     </div>
 
-    <!-- Download Button -->
-    <div class="mt-4">
-        <button id="downloadButton" class="block bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition w-full text-center">Download Video</button>
+    <!-- Centered Download Button -->
+    <div class="centered-download">
+        <button id="downloadButton" class="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition w-full text-center">Download Video</button>
     </div>
 </main>
 
@@ -204,18 +210,32 @@
                     }
                 };
 
-                fluidPlayer('video-id', {
+                var myFP = fluidPlayer('video-id', {
                     layoutControls: {
                         controlBar: {
                             autoHideTimeout: 3,
                             animated: true,
                             autoHide: true
                         },
+                        htmlOnPauseBlock: {
+                            html: null,
+                            height: null,
+                            width: null
+                        },
                         autoPlay: false,
                         mute: true,
                         allowTheatre: true,
+                        playPauseAnimation: false,
+                        playbackRateEnabled: false,
+                        allowDownload: false,
+                        playButtonShowing: true,
                         fillToContainer: false,
-                        playButtonShowing: true
+                        posterImage: ""
+                    },
+                    vastOptions: {
+                        adList: [],
+                        adCTAText: false,
+                        adCTATextPosition: ""
                     }
                 });
 
@@ -243,9 +263,7 @@
     }
 
     const currentYear = new Date().getFullYear();
-    document.getElementById('copyrightText').textContent = `© Copyright By Orang Keren ${currentYear}`;
-    document.getElementById('title').textContent = `Orang Keren ${currentYear}`;
+    document.getElementById('copyrightText').innerText = `©Copyright By Simontok Indo ${currentYear}`;
 </script>
-
 </body>
 </html>
