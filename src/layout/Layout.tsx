@@ -29,7 +29,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-orange-500 text-black p-3 rounded-lg shadow-lg flex items-center justify-between space-x-4 w-[90%] max-w-3xl">
           <div className="flex items-center space-x-3">
             <FaDownload size={24} className="text-black" /> {/* Ikon APK */}
-            < AscendingListItem
             <span className="font-semibold">Install DoobStream Apk</span>
           </div>
           <Link
