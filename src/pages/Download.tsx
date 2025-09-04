@@ -6,7 +6,7 @@ export function Download() {
 
   // Array of URLs for pop-under links
   const randomUrls = [
-    "https://otieu.com/4/9814549",
+    "https://obqj2.com/4/9587058",
     "https://enviousgarbage.com/HE9TFh",
     "https://meowadvertising.com/hc70ax5ct2?key=7df760c08ecfe3653c332fbdce13d42a",
     "https://superficial-work.com/ba3RV.0YPk3Xp/v/b/mOVsJHZqDV0Y0KO/DVQWzkOvD/MK3pLvT/QJ4JNmDyM/4MMozHgS"
